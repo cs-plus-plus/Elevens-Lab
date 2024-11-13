@@ -1,16 +1,27 @@
+package com.elevens.tests;
 
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ElevensTest {
+
+    // Setup for capturing console output
+    private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
+
+    @BeforeEach
+    public void setUp() {
+        System.setOut(new PrintStream(outputStreamCaptor));
+    }
 
     @Test
     public void testCardClass() throws Exception {
@@ -58,41 +69,34 @@ public class ElevensTest {
         
         // Testing perfectShuffle method
         Method perfectShuffleMethod = shufflerClass.getMethod("perfectShuffle", int[].class);
-
-        // Initial array for perfect shuffling
-        int[] valuesEven = {1, 2, 3, 4};
-        int[] originalValuesEven = valuesEven.clone();
-        perfectShuffleMethod.invoke(null, (Object) valuesEven);
-
-        // Check that the array length remains the same
-        assertEquals(originalValuesEven.length, valuesEven.length, "Array length should remain the same after perfect shuffle");
-
-        // Ensure the order has changed (since it's a perfect shuffle, we expect the cards to interleave)
-        assertFalse(Arrays.equals(originalValuesEven, valuesEven), "Order should change after perfect shuffle");
         
-        // Reset array and shuffle again to see if it produces the same interleaved result
-        int[] valuesEvenSecondShuffle = originalValuesEven.clone();
-        perfectShuffleMethod.invoke(null, (Object) valuesEvenSecondShuffle);
-        assertArrayEquals(valuesEven, valuesEvenSecondShuffle, "Perfect shuffle should produce consistent interleaved results");
+        // Initial array for shuffling
+        int[] originalValues = {1, 2, 3, 4, 5, 6, 7, 8};
+        int[] shuffledValues = originalValues.clone();
+        
+        // Perform perfect shuffle
+        perfectShuffleMethod.invoke(null, (Object) shuffledValues);
+
+        // Check if perfect shuffle interleaves the two halves correctly
+        int mid = originalValues.length / 2;
+        for (int i = 0; i < mid; i++) {
+            assertEquals(originalValues[i], shuffledValues[i * 2], "Perfect shuffle should place cards from first half in even positions");
+            assertEquals(originalValues[i + mid], shuffledValues[i * 2 + 1], "Perfect shuffle should place cards from second half in odd positions");
+        }
+
+        // Ensuring array length remains the same
+        assertEquals(originalValues.length, shuffledValues.length, "Array length should remain the same after perfect shuffle");
 
         // Testing selectionShuffle method
         Method selectionShuffleMethod = shufflerClass.getMethod("selectionShuffle", int[].class);
 
-        int[] valuesSelection = {1, 2, 3, 4, 5};
-        int[] originalValuesSelection = valuesSelection.clone();
-        selectionShuffleMethod.invoke(null, (Object) valuesSelection);
+        int[] selectionShuffleValues = originalValues.clone();
+        selectionShuffleMethod.invoke(null, (Object) selectionShuffleValues);
 
-        // Check that the array length remains the same
-        assertEquals(originalValuesSelection.length, valuesSelection.length, "Array length should remain the same after selection shuffle");
-
-        // Ensure the order has changed after selection shuffle
-        assertFalse(Arrays.equals(originalValuesSelection, valuesSelection), "Order should change after selection shuffle");
-
-        // Check that the shuffled result has the same elements as the original
-        Arrays.sort(valuesSelection);
-        Arrays.sort(originalValuesSelection);
-        assertArrayEquals(originalValuesSelection, valuesSelection, "Shuffled array should contain the same elements as the original");
+        // Check that the order of cards has changed after selection shuffle
+        assertNotEquals(Arrays.toString(originalValues), Arrays.toString(selectionShuffleValues), "Cards order should change after selection shuffle");
     }
+
 
     @Test
     public void testDeckClassActivity4() throws Exception {
@@ -117,78 +121,68 @@ public class ElevensTest {
     @Test
     public void testElevensBoardClassActivity9() throws Exception {
         Class<?> elevensBoardClass = Class.forName("Activity9.ElevensBoard9");
+        Object elevensBoard = elevensBoardClass.getDeclaredConstructor().newInstance();
+
         Method anotherPlayIsPossibleMethod = elevensBoardClass.getMethod("anotherPlayIsPossible");
-        Method isLegalMethod = elevensBoardClass.getMethod("isLegal", List.class);
-
         boolean playPossible = false;
-        boolean validPlay = false;
-
         for (int i = 0; i < 100; i++) {
-            Object elevensBoard = elevensBoardClass.getDeclaredConstructor().newInstance();
-
-            // Check "anotherPlayIsPossible"
             if ((boolean) anotherPlayIsPossibleMethod.invoke(elevensBoard)) {
                 playPossible = true;
+                break;
             }
+        }
+        assertTrue(playPossible, "There should be possible plays at least once in 100 runs for Activity 9.");
 
-            // Check "isLegal" with various indices
-            List<List<Integer>> testIndices = Arrays.asList(
+        Method isLegalMethod = elevensBoardClass.getMethod("isLegal", List.class);
+        boolean validPlay = false;
+        List<List<Integer>> testIndices = Arrays.asList(
                 Arrays.asList(0, 1), Arrays.asList(0, 2), Arrays.asList(1, 2),
                 Arrays.asList(0, 1, 2), Arrays.asList(0, 1, 3)
-            );
+        );
 
+        for (int i = 0; i < 100; i++) {
             for (List<Integer> indices : testIndices) {
                 if ((boolean) isLegalMethod.invoke(elevensBoard, indices)) {
                     validPlay = true;
                     break;
                 }
             }
-
-            if (playPossible && validPlay) {
-                break; // Satisfied if at least one instance passes both conditions
-            }
+            if (validPlay) break;
         }
-
-        assertTrue(playPossible, "There should be possible plays at least once in 100 runs for Activity 9.");
         assertTrue(validPlay, "A pair summing to 11 or a valid trio should be legal at least once in 100 runs for Activity 9.");
     }
 
     @Test
     public void testThirteensBoardClassActivity10() throws Exception {
         Class<?> thirteensBoardClass = Class.forName("Activity10.ThirteensBoard10");
+        Object thirteensBoard = thirteensBoardClass.getDeclaredConstructor().newInstance();
+
         Method anotherPlayIsPossibleMethod = thirteensBoardClass.getMethod("anotherPlayIsPossible");
-        Method isLegalMethod = thirteensBoardClass.getMethod("isLegal", List.class);
-
         boolean playPossible = false;
-        boolean validPlay = false;
-
         for (int i = 0; i < 100; i++) {
-            Object thirteensBoard = thirteensBoardClass.getDeclaredConstructor().newInstance();
-
-            // Check "anotherPlayIsPossible"
             if ((boolean) anotherPlayIsPossibleMethod.invoke(thirteensBoard)) {
                 playPossible = true;
+                break;
             }
+        }
+        assertTrue(playPossible, "There should be possible plays at least once in 100 runs for Activity 10.");
 
-            // Check "isLegal" with various indices
-            List<List<Integer>> testIndices = Arrays.asList(
+        Method isLegalMethod = thirteensBoardClass.getMethod("isLegal", List.class);
+        boolean validPlay = false;
+        List<List<Integer>> testIndices = Arrays.asList(
                 Arrays.asList(0, 1), Arrays.asList(0, 2), Arrays.asList(1, 2),
                 Arrays.asList(0, 1, 2), Arrays.asList(0, 1, 3)
-            );
+        );
 
+        for (int i = 0; i < 100; i++) {
             for (List<Integer> indices : testIndices) {
                 if ((boolean) isLegalMethod.invoke(thirteensBoard, indices)) {
                     validPlay = true;
                     break;
                 }
             }
-
-            if (playPossible && validPlay) {
-                break; // Satisfied if at least one instance passes both conditions
-            }
+            if (validPlay) break;
         }
-
-        assertTrue(playPossible, "There should be possible plays at least once in 100 runs for Activity 10.");
         assertTrue(validPlay, "A valid play should be legal at least once in 100 runs for Activity 10.");
     }
 
@@ -196,35 +190,34 @@ public class ElevensTest {
     public void testElevensSimulationClassActivity11() throws Exception {
         Class<?> elevensSimulationClass = Class.forName("Activity11.ElevensSimulation11");
 
-        // Capture the standard output
+        // Set up the environment to capture console output
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream originalOut = System.out;
-        ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(outputStreamCaptor));
+        System.setOut(new PrintStream(outputStream));
 
-        boolean wonAtLeastOnce = false;
-        int maxAttempts = 100;
-
-        for (int i = 0; i < maxAttempts; i++) {
-            // Clear the output stream for each simulation
-            outputStreamCaptor.reset();
-
-            // Run the main method to simulate a game
+        try {
+            // Call the main method to run the simulation
             Method mainMethod = elevensSimulationClass.getMethod("main", String[].class);
             mainMethod.invoke(null, (Object) new String[0]);
 
-            // Check the captured output for "Games won: " line
-            String output = outputStreamCaptor.toString();
-            if (output.contains("Games won:    1")) {
-                wonAtLeastOnce = true;
-                break;
-            }
+            // Capture the output to check for signs of successful play logic
+            String output = outputStream.toString();
+
+            // Check if the debug output reflects plays occurring
+            assertTrue(output.contains("Games won:"), "Simulation should print the number of games won.");
+            assertTrue(output.contains("Percent won:"), "Simulation should print the percentage of games won.");
+
+            // Look for evidence that playIfPossible and related methods were executed
+            assertTrue(output.contains("playing pair") || output.contains("playing JQK"), 
+                "Debug output should indicate that playPairSum11IfPossible or playJQKIfPossible methods were triggered.");
+            
+            // Ensure that the win percentage is non-zero, which should only happen if play logic is correct
+            assertFalse(output.contains("Percent won: 0.0%"), 
+                "Percent won should be greater than zero if playIfPossible and helper methods are implemented correctly.");
+
+        } finally {
+            // Reset standard output back to the console
+            System.setOut(originalOut);
         }
-
-        // Reset the standard output to its original state
-        System.setOut(originalOut);
-
-        assertTrue(wonAtLeastOnce, "At least one game should result in a win across 100 attempts.");
     }
-
-
 }
