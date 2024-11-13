@@ -126,6 +126,7 @@ public class ElevensTest {
         Method anotherPlayIsPossibleMethod = elevensBoardClass.getMethod("anotherPlayIsPossible");
         boolean playPossible = false;
         for (int i = 0; i < 100; i++) {
+        	elevensBoard = elevensBoardClass.getDeclaredConstructor().newInstance();
             if ((boolean) anotherPlayIsPossibleMethod.invoke(elevensBoard)) {
                 playPossible = true;
                 break;
@@ -141,6 +142,7 @@ public class ElevensTest {
         );
 
         for (int i = 0; i < 100; i++) {
+        	elevensBoard = elevensBoardClass.getDeclaredConstructor().newInstance();
             for (List<Integer> indices : testIndices) {
                 if ((boolean) isLegalMethod.invoke(elevensBoard, indices)) {
                     validPlay = true;
@@ -160,6 +162,7 @@ public class ElevensTest {
         Method anotherPlayIsPossibleMethod = thirteensBoardClass.getMethod("anotherPlayIsPossible");
         boolean playPossible = false;
         for (int i = 0; i < 100; i++) {
+        	thirteensBoard = thirteensBoardClass.getDeclaredConstructor().newInstance();
             if ((boolean) anotherPlayIsPossibleMethod.invoke(thirteensBoard)) {
                 playPossible = true;
                 break;
@@ -175,6 +178,7 @@ public class ElevensTest {
         );
 
         for (int i = 0; i < 100; i++) {
+        	thirteensBoard = thirteensBoardClass.getDeclaredConstructor().newInstance();
             for (List<Integer> indices : testIndices) {
                 if ((boolean) isLegalMethod.invoke(thirteensBoard, indices)) {
                     validPlay = true;
