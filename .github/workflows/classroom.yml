@@ -1,0 +1,90 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: testCardClass
+      id: testcardclass
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: testCardClass
+        setup-command: mvn compile
+        command: mvn -Dtest=ElevensTest#testCardClass test
+        timeout: 3
+        max-score: 10
+    - name: testDeckClassActivity2
+      id: testdeckclassactivity2
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: testDeckClassActivity2
+        setup-command: mvn compile
+        command: mvn -Dtest=ElevensTest#testDeckClassActivity2 test
+        timeout: 3
+        max-score: 10
+    - name: testShufflerClass
+      id: testshufflerclass
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: testShufflerClass
+        setup-command: mvn compile
+        command: mvn -Dtest=ElevensTest#testShufflerClass test
+        timeout: 3
+        max-score: 15
+    - name: testDeckClassActivity4
+      id: testdeckclassactivity4
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: testDeckClassActivity4
+        setup-command: mvn compile
+        command: mvn -Dtest=ElevensTest#testDeckClassActivity4 test
+        timeout: 3
+        max-score: 15
+    - name: testElevensBoardClassActivity9
+      id: testelevensboardclassactivity9
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: testElevensBoardClassActivity9
+        setup-command: mvn compile
+        command: mvn -Dtest=ElevensTest#testElevensBoardClassActivity9 test
+        timeout: 3
+        max-score: 20
+    - name: testThirteensBoardClassActivity10
+      id: testthirteensboardclassactivity10
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: testThirteensBoardClassActivity10
+        setup-command: mvn compile
+        command: mvn -Dtest=ElevensTest#testThirteensBoardClassActivity10 test
+        timeout: 3
+        max-score: 20
+    - name: testElevensSimulationClassActivity11
+      id: testelevenssimulationclassactivity11
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: testElevensSimulationClassActivity11
+        setup-command: mvn compile
+        command: mvn -Dtest=ElevensTest#testElevensSimulationClassActivity11 test
+        timeout: 3
+        max-score: 10
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        TESTCARDCLASS_RESULTS: "${{steps.testcardclass.outputs.result}}"
+        TESTDECKCLASSACTIVITY2_RESULTS: "${{steps.testdeckclassactivity2.outputs.result}}"
+        TESTSHUFFLERCLASS_RESULTS: "${{steps.testshufflerclass.outputs.result}}"
+        TESTDECKCLASSACTIVITY4_RESULTS: "${{steps.testdeckclassactivity4.outputs.result}}"
+        TESTELEVENSBOARDCLASSACTIVITY9_RESULTS: "${{steps.testelevensboardclassactivity9.outputs.result}}"
+        TESTTHIRTEENSBOARDCLASSACTIVITY10_RESULTS: "${{steps.testthirteensboardclassactivity10.outputs.result}}"
+        TESTELEVENSSIMULATIONCLASSACTIVITY11_RESULTS: "${{steps.testelevenssimulationclassactivity11.outputs.result}}"
+      with:
+        runners: testcardclass,testdeckclassactivity2,testshufflerclass,testdeckclassactivity4,testelevensboardclassactivity9,testthirteensboardclassactivity10,testelevenssimulationclassactivity11
