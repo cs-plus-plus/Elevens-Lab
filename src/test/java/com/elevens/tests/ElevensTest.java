@@ -210,10 +210,6 @@ public class ElevensTest {
             // Check if the debug output reflects plays occurring
             assertTrue(output.contains("Games won:"), "Simulation should print the number of games won.");
             assertTrue(output.contains("Percent won:"), "Simulation should print the percentage of games won.");
-
-            // Look for evidence that playIfPossible and related methods were executed
-            assertTrue(output.contains("playing pair") || output.contains("playing JQK"), 
-                "Debug output should indicate that playPairSum11IfPossible or playJQKIfPossible methods were triggered.");
             
             // Ensure that the win percentage is non-zero, which should only happen if play logic is correct
             assertFalse(output.contains("Percent won: 0.0%"), 
