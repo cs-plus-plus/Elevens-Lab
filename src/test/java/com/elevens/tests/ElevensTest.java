@@ -43,25 +43,26 @@ public class ElevensTest {
     }
 
     @Test
-    public void testDeckClassActivity2() throws Exception {
-        Class<?> deckClass = Class.forName("Activity2.Deck2");
-        String[] ranks = {"ace", "2", "3"};
-        String[] suits = {"hearts", "spades"};
-        int[] pointValues = {1, 2, 3};
-        Object deck = deckClass.getDeclaredConstructor(String[].class, String[].class, int[].class)
-                .newInstance(ranks, suits, pointValues);
+public void testDeckClassActivity2() throws Exception {
+    Class<?> deckClass = Class.forName("Activity2.Deck2");
+    String[] ranks = {"ace", "2", "3"};
+    String[] suits = {"hearts", "spades", "diamonds"};
+    int[] pointValues = {1, 2, 3};
+    Object deck = deckClass.getDeclaredConstructor(String[].class, String[].class, int[].class)
+            .newInstance(ranks, suits, pointValues);
 
-        Method sizeMethod = deckClass.getMethod("size");
-        assertEquals(6, sizeMethod.invoke(deck), "Deck size should be 6");
+    Method sizeMethod = deckClass.getMethod("size");
+    assertEquals(3, sizeMethod.invoke(deck), "Deck size should be 3 (parallel construction)");
 
-        Method dealMethod = deckClass.getMethod("deal");
-        dealMethod.invoke(deck);
-        assertEquals(5, sizeMethod.invoke(deck), "Deck size should be 5 after one deal");
+    Method dealMethod = deckClass.getMethod("deal");
+    dealMethod.invoke(deck);
+    assertEquals(2, sizeMethod.invoke(deck), "Deck size should be 2 after one deal");
 
-        Method shuffleMethod = deckClass.getMethod("shuffle");
-        shuffleMethod.invoke(deck);
-        assertEquals(5, sizeMethod.invoke(deck), "Deck size should remain 5 after shuffle");
-    }
+    Method shuffleMethod = deckClass.getMethod("shuffle");
+    shuffleMethod.invoke(deck);
+    assertEquals(2, sizeMethod.invoke(deck), "Deck size should remain 2 after shuffle");
+}
+
 
     @Test
     public void testShufflerClass() throws Exception {
@@ -99,24 +100,25 @@ public class ElevensTest {
 
 
     @Test
-    public void testDeckClassActivity4() throws Exception {
-        Class<?> deckClass = Class.forName("Activity4.Deck4");
-        String[] ranks = {"jack", "queen", "king"};
-        String[] suits = {"diamonds", "clubs"};
-        int[] pointValues = {10, 10, 10};
-        Object deck = deckClass.getDeclaredConstructor(String[].class, String[].class, int[].class)
-                .newInstance(ranks, suits, pointValues);
+public void testDeckClassActivity4() throws Exception {
+    Class<?> deckClass = Class.forName("Activity4.Deck4");
+    String[] ranks = {"jack", "queen", "king"};
+    String[] suits = {"diamonds", "clubs", "hearts"};
+    int[] pointValues = {10, 10, 10};
+    Object deck = deckClass.getDeclaredConstructor(String[].class, String[].class, int[].class)
+            .newInstance(ranks, suits, pointValues);
 
-        Method sizeMethod = deckClass.getMethod("size");
-        assertEquals(6, sizeMethod.invoke(deck), "Deck size should be 6");
+    Method sizeMethod = deckClass.getMethod("size");
+    assertEquals(3, sizeMethod.invoke(deck), "Deck size should be 3 (parallel construction)");
 
-        Method isEmptyMethod = deckClass.getMethod("isEmpty");
-        assertFalse((boolean) isEmptyMethod.invoke(deck), "Deck should not be empty initially");
+    Method isEmptyMethod = deckClass.getMethod("isEmpty");
+    assertFalse((boolean) isEmptyMethod.invoke(deck), "Deck should not be empty initially");
 
-        Method dealMethod = deckClass.getMethod("deal");
-        dealMethod.invoke(deck);
-        assertEquals(5, sizeMethod.invoke(deck), "Deck size should be 5 after one deal");
-    }
+    Method dealMethod = deckClass.getMethod("deal");
+    dealMethod.invoke(deck);
+    assertEquals(2, sizeMethod.invoke(deck), "Deck size should be 2 after one deal");
+}
+
 
     @Test
     public void testElevensBoardClassActivity9() throws Exception {
